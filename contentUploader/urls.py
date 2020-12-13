@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from contentUploaderApp.views import FileView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("file/", FileView.as_view()),
 ]

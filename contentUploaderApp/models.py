@@ -10,8 +10,10 @@ class File(models.Model):
     fileName = models.CharField(max_length=50)
     fileType =  models.CharField(max_length=20, choices=[("Image", "Image"), ("Video", "Video")], default="Image")
     fileObject = models.FileField(null=False, blank=False, upload_to=settings.MEDIA_ROOT)
+    fileSize = models.CharField(max_length=100, default=0)
     fileFormat = models.CharField(null=True, blank=True, max_length=10, default="") 
     fileResolution = models.IntegerField(default=360)
+
     insertedAt = models.DateTimeField(auto_now=True)
     updatedAt = models.DateTimeField(auto_now=True)
     
