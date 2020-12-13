@@ -29,3 +29,33 @@ class Decorators():
             response = function(referenceToCurrentObject, request) if (getFileCountByFileName(fileParams.name) == 0) else utils.getBadResponse("File with the given name already exists", 400)
             return response
         return innerFunction
+
+    def checkIfValidParams(self, function): 
+        def innerFunction(referenceToCurrentObject, request):
+            utils = Utils()
+            params = utils.getParamsFromRequest(request)
+            successResponse = function(referenceToCurrentObject, request)
+            badResponse =  utils.getBadResponse("Invalid Params", 400)
+            if "operation" in params: 
+                operationVal = params["operation"]
+                if type(operationVal) == str and operationVal == "all":
+                    return successResponse
+                elif type(operationVal) == dict and "fileName" in operationVal:
+                    return successResponse
+                else: 
+                    return badResponse
+            else: 
+               return badResponse
+        return innerFunction
+
+    def validateFileContentTypeForPOST(self, function): 
+        def innerFunction(referenceToCurrentObject, request):
+            response = function(referenceToCurrentObject, request) if request.content_type == "multipart/form-data" else utils.getBadResponse("Invalid Content Type", 400)
+            return response
+        return innerFunction
+
+    def validateFileContentTypeForDELETE(self, function):
+        def innerFunction(referenceToCurrentObject, request):
+            response = function(referenceToCurrentObject, request) if request.content_type == "application/json" else utils.getBadResponse("Invalid Content Type", 400)
+            return response
+        return innerFunction

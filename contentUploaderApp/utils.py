@@ -31,3 +31,13 @@ class Utils():
             ),
             status=statusCode
         )
+
+    def getGoodResponse(self, message):
+        return HttpResponse(
+            json.dumps(
+                {
+                    "message": message
+                }
+            ),
+            status=200
+        )

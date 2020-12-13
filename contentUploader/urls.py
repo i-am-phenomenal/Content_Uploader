@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from contentUploaderApp.views import FileView
+from contentUploaderApp.views import FileView, deleteAllFileRecords
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("file/", FileView.as_view()),
+    path("file/delete_all", deleteAllFileRecords), # Added this URL for testing purposes
 ]
