@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from .decorators import Decorators
 import os
 from django.conf import settings
+from .image_converter import ImageConverter
 
 class FileView(View): 
     decorators = Decorators()
@@ -27,17 +28,25 @@ class FileView(View):
             [type]: [description]
         """
         utils = Utils()
+        imageConverter = ImageConverter()
         params = utils.getFileObjectFromRequest(request)
+        savedImagePaths = []
+        if params["fileType"] == "Image":
+            savedImagePaths = imageConverter.convertToMultipleFormats(params)
         fileObject = File(
             fileName = params["fileName"],
             fileType= params["fileType"],
             fileObject = params["fileObject"],
             fileSize = params["fileSize"],
             fileFormat = params["fileFormat"],
-            fileResolution = params["fileResolution"]
+            fileResolution = params["fileResolution"],
+            convertedFilePaths = ";;".join(savedImagePaths)
         )
         fileObject.save()
-        return HttpResponse("Ok")
+        return HttpResponse(
+            json.dumps(utils.convertFileObjectToDict(fileObject)),
+            content_type="application/json"
+        )
     
     @decorators.validateFileContentTypeForDELETE
     @decorators.checkIfValidParams

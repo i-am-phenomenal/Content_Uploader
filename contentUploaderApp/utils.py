@@ -9,6 +9,7 @@ class Utils():
 
     def getFileObjectFromRequest(self, requestObject): 
         fileParams = requestObject.FILES.get("File")
+        allFiles = requestObject.FILES.getlist("File")
         resolution = requestObject.POST.get("resolution")
         resolutionVal = resolution if resolution is not None else 0
         fileContentType = fileParams.content_type.split("/")
@@ -50,5 +51,6 @@ class Utils():
             "fileType": file.fileType,
             "fileSize": file.fileSize,
             "fileFormat": file.fileFormat,
-            "fileResolution": file.fileResolution
+            "fileResolution": file.fileResolution,
+            "convertedFilePaths": file.convertedFilePaths
         }
