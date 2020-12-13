@@ -56,6 +56,30 @@ class Decorators():
 
     def validateFileContentTypeForDELETE(self, function):
         def innerFunction(referenceToCurrentObject, request):
+            utils = Utils()
             response = function(referenceToCurrentObject, request) if request.content_type == "application/json" else utils.getBadResponse("Invalid Content Type", 400)
             return response
+        return innerFunction
+
+    def checkIfValidQueryParam(self, function): 
+        def innerFunction(referenceToCurrentObject, request):
+            utils = Utils() 
+            queryParams = request.GET.get("fileName")
+            if queryParams is None: 
+                return utils.getBadResponse("Invalid params !", 400)
+            else: 
+                return function(referenceToCurrentObject, request)
+        return innerFunction
+
+
+    def checkIfFileExists(self, function):
+        def innerFunction(referenceToCurrentObject, request):
+            utils = Utils()
+            fileName = request.GET.get("fileName")
+            if fileName != "all":
+                fileExists = lambda fileName: File.objects.filter(fileName=fileName).exists()
+                response = function(referenceToCurrentObject, request) if fileExists(fileName) else utils.getBadResponse("File with the given name does not exist", 400)
+                return response
+            else: 
+                return function(referenceToCurrentObject, request)
         return innerFunction

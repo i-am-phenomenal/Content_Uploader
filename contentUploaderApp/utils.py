@@ -13,7 +13,7 @@ class Utils():
         resolutionVal = resolution if resolution is not None else 0
         fileContentType = fileParams.content_type.split("/")
         fileProperties = {
-            "fileName": fileParams.name,
+            "fileName": fileParams.name.split(".")[0].strip(),
             "fileType": fileContentType[0].capitalize(),
             "fileResolution": resolutionVal,
             "fileSize": str(fileParams.size),
@@ -29,7 +29,8 @@ class Utils():
                     "message": message
                 }
             ),
-            status=statusCode
+            status=statusCode,
+            content_type="application/json"
         )
 
     def getGoodResponse(self, message):
@@ -39,5 +40,15 @@ class Utils():
                     "message": message
                 }
             ),
-            status=200
+            status=200,
+            content_type="application/json"
         )
+
+    def convertFileObjectToDict(self, file):
+        return {
+            "fileName": file.fileName,
+            "fileType": file.fileType,
+            "fileSize": file.fileSize,
+            "fileFormat": file.fileFormat,
+            "fileResolution": file.fileResolution
+        }

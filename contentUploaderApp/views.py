@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import json
 import glob
 from django.views import View
 from .utils import Utils
@@ -40,7 +41,6 @@ class FileView(View):
     
     @decorators.validateFileContentTypeForDELETE
     @decorators.checkIfValidParams
-    # @decorators.checkIfFilePresent
     def delete(self, request): 
         """ Deletes all files or the specified files
 
@@ -51,7 +51,6 @@ class FileView(View):
             }
             A 400 error code will be thrown if the format is wrong
         """
-
         utils = Utils()
         params = utils.getParamsFromRequest(request)
         operationVal = params["operation"]
@@ -72,6 +71,36 @@ class FileView(View):
                     "The File with the given name does not exist",
                     400
                 )
+
+    @decorators.checkIfValidQueryParam
+    @decorators.checkIfFileExists
+    def get(self, request): 
+        """[summary]
+
+        NOTE Expects query param fileName to be in the
+        if fileName == "all"  then all the record would be returned else the specified file would be returned
+
+            A 400 response would be returned if the response is not of this format
+        Args:
+            request (WSGI Request): [description]
+        """
+        utils = Utils()
+        fileName = request.GET.get("fileName")
+        if fileName == "all":
+            allFiles = [
+                utils.convertFileObjectToDict(file)
+                for file in File.objects.all()
+            ]
+            return HttpResponse(
+                json.dumps(allFiles),
+                content_type="application/json"
+            )
+        else:
+            fileObject = File.objects.get(fileName=fileName)
+            return HttpResponse(
+                json.dumps(utils.convertFileObjectToDict(fileObject)),
+                content_type="application/json"
+            )
 
 def deleteAllFileRecords(request): 
     try:
