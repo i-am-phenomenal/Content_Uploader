@@ -8,7 +8,7 @@ class Utils():
         return params
 
     def getFileObjectFromRequest(self, requestObject): 
-        fileParams = requestObject.FILES.get("file")
+        fileParams = requestObject.FILES.get("File")
         resolution = requestObject.POST.get("resolution")
         resolutionVal = resolution if resolution is not None else 0
         fileContentType = fileParams.content_type.split("/")
@@ -24,7 +24,7 @@ class Utils():
 
     def getBadResponse(self, message, statusCode=500):
         return HttpResponse(
-            json.loads(
+            json.dumps(
                 {
                     "message": message
                 }

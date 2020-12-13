@@ -4,7 +4,7 @@ def validate_file_type(sender, instance, **kwargs):
     fileType = instance.fileType
     fileExtension = instance.fileObject.file.name.split(".")[1].strip()
     if fileType == "Image": 
-        if fileExtension not in ["jpg", "png", "gif", "webp", "tiff", "psd", "raw", "bmp", "heif", "indd"]:
+        if fileExtension not in ["jpg", "png", "gif", "webp", "tiff", "psd", "raw", "bmp", "heif", "indd", "jfif"]:
             raise ValidationError("Invalid File Type for Image {fileExtension}".format(fileExtension=fileExtension))
 
     elif fileType == "Video": 

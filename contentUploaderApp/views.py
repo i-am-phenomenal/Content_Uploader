@@ -9,11 +9,11 @@ class FileView(View):
     decorators = Decorators()
     
     @decorators.checkIfFilePresentInRequest
+    @decorators.checkIfFileDoesNotExist
     @decorators.checkIfFileSizeUnderLimit
     def post(self, request):
         utils = Utils()
         params = utils.getFileObjectFromRequest(request)
-        print(params, "AAAAAAAAAAAAAAAAAAAA")
         fileObject = File(
             fileName = params["fileName"],
             fileType= params["fileType"],
