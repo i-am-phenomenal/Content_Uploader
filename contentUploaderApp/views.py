@@ -9,7 +9,7 @@ from .decorators import Decorators
 import os
 from django.conf import settings
 from .image_converter import ImageConverter
-from .queue import Queue
+from .queue import ProcessQueue
 
 class FileView(View): 
     decorators = Decorators()
@@ -20,18 +20,29 @@ class FileView(View):
     @decorators.checkIfFileDoesNotExist
     @decorators.checkIfFileSizeUnderLimit
     def post(self, request):
-        """[summary]
-         
+        """
+        [Uploads the given file(s) to the MEDIA diretory]
+        Currenty supported formats are
+        Image -> "jpg", "png", "gif", "webp", "tiff", "psd", "raw", "bmp", "heif", "indd", "jfif"
+        Video ->  "mp4","m4v","svi","mkv","flv","vob","ogv","ogg","mng","avi","m4p","mp3","mpv","mpeg","mpe","3gp"
+        Max File size should be 100  MB
+
          NOTE: Content Type for this request should be multipart/form-data
+         The files in the request should be in this format
+         type -> multipart/form-data
+         Field Name           Value
+         FieldName 1          Uploaded File
+         File Name  2          Uploaded File 1      
+         and so on. 
         Args:
-            request ([type]): [description]
+            request ([WSGI Request Object]): [description]
 
         Returns:
-            [type]: [description]
+            [Http Response]
         """
         utils = Utils()
         imageConverter = ImageConverter()
-        queue = Queue()
+        queue = ProcessQueue()
 
         params = utils.getFileObjectFromRequest(request)
         savedImagePaths = []
@@ -41,7 +52,6 @@ class FileView(View):
         if len(allFilesDict) > 1:
             for key, value in allFilesDict.items():
                 queue.pushVal(value[0])
-            
             utils.processFiles(queue)
             return HttpResponse(
                 "Uploaded All Files",
@@ -121,17 +131,16 @@ class FileView(View):
                 content_type="application/json"
             )
 
+
 def deleteAllFileRecords(request): 
+    """Made this View function for my own testing purposes
+    """
     try:
         allFiles = File.objects.all()
         allFiles.delete()
         for file in allFiles:
             file.fileObject.delete()
         fileList = glob.glob(settings.MEDIA_ROOT)
-        #WIP
-        # for file in fileList:
-        #     print(file, "AAAAAAAAAAAAAAa")
-        #     os.remove(file)
 
         return HttpResponse("Done")
     except Exception as e:

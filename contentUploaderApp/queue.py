@@ -1,7 +1,7 @@
 import os
 import pickle
 
-class Queue():
+class ProcessQueue():
     def __init__(self): 
         self.queue = []
 

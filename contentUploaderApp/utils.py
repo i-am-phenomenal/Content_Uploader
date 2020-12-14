@@ -2,7 +2,7 @@ import json
 from background_task import background
 from django.http import HttpResponse
 from .models  import File
-from .image_converter import ImageConverter
+from .image_converter import ImageConverter 
 
 class Utils():
     def getParamsFromRequest(self, requestObject): 
