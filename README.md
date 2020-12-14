@@ -1,5 +1,5 @@
 Please install required libraries through the following command
-pip freeze requirements.txt
+pip install requirements.txt
 
 The uploaded files are being stored in the /MEDIA/ directory which is specified in the settings.py file.
 
