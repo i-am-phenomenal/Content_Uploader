@@ -37,17 +37,32 @@ class FileView(View):
         savedImagePaths = []
         allFilesDict = dict(request.FILES)
         
+        
         if len(allFilesDict) > 1:
             for key, value in allFilesDict.items():
                 queue.pushVal(value[0])
-            
-            queue.saveDetailsInFile()
-            toBeProcessed = queue.popVal()
+            # queue.saveDetailsInFile()
+            while (len(queue.queue) >= 1): 
+                toBeProcessed = queue.popVal()
+                print(toBeProcessed, "!!!!!!!!!!")
+                convertedToDict = utils.convertTemporaryFileToDict(toBeProcessed)
+                print(convertedToDict, "XXXXXXXXXx")
+                if convertedToDict["fileType"] == "Image":
+                    savedImagePaths = imageConverter.convertToMultipleFormats(convertedToDict)
+                fileObject = utils.convertDictToFileObject(convertedToDict, savedImagePaths)
+                print(fileObject.fileName, "AAAAAAAAAAAAAAAAAAAAAA")
+                print("\n")
+                fileObject.save()
+            return HttpResponse(
+                "Uploaded All Files",
+                # json.dumps(utils.convertFileObjectToDict(fileObject)),
+                content_type="application/json"
+            )        
 
         else:
             if params["fileType"] == "Image":
                 savedImagePaths = imageConverter.convertToMultipleFormats(params)
-            fileObject = utils.convertDictToFileObject(savedImagePaths)
+            fileObject = utils.convertDictToFileObject(params, savedImagePaths)
             fileObject.save()
             return HttpResponse(
                 json.dumps(utils.convertFileObjectToDict(fileObject)),

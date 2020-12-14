@@ -66,3 +66,15 @@ class Utils():
             fileResolution = params["fileResolution"],
             convertedFilePaths = ";;".join(savedImagePaths)
         )
+
+    def convertTemporaryFileToDict(self, tempFile): 
+        fileContentType = tempFile.content_type.split("/")
+        properties = {
+            "fileName": tempFile.name.split(".")[0].strip(),
+            "fileType": fileContentType[0].capitalize(),
+            "fileResolution": 0,
+            "fileSize": str(tempFile.size),
+            "fileFormat": fileContentType[1],
+            "fileObject": tempFile
+        }
+        return properties

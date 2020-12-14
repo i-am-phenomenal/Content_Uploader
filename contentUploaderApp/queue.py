@@ -4,7 +4,6 @@ import pickle
 class Queue():
     def __init__(self): 
         self.queue = []
-        self.currentFile = None
 
     def pushVal(self, val):
         self.queue.append(val)
@@ -20,4 +19,3 @@ class Queue():
         with open(os.getcwd() + "/queue_details.txt", "w") as file: 
             file.write(", ".join(fileNames))
             file.write("\n")
-            file.write(self.currentFile.name)
