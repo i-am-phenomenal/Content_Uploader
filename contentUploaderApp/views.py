@@ -41,21 +41,10 @@ class FileView(View):
         if len(allFilesDict) > 1:
             for key, value in allFilesDict.items():
                 queue.pushVal(value[0])
-            # queue.saveDetailsInFile()
-            while (len(queue.queue) >= 1): 
-                toBeProcessed = queue.popVal()
-                print(toBeProcessed, "!!!!!!!!!!")
-                convertedToDict = utils.convertTemporaryFileToDict(toBeProcessed)
-                print(convertedToDict, "XXXXXXXXXx")
-                if convertedToDict["fileType"] == "Image":
-                    savedImagePaths = imageConverter.convertToMultipleFormats(convertedToDict)
-                fileObject = utils.convertDictToFileObject(convertedToDict, savedImagePaths)
-                print(fileObject.fileName, "AAAAAAAAAAAAAAAAAAAAAA")
-                print("\n")
-                fileObject.save()
+            
+            utils.processFiles(queue)
             return HttpResponse(
                 "Uploaded All Files",
-                # json.dumps(utils.convertFileObjectToDict(fileObject)),
                 content_type="application/json"
             )        
 

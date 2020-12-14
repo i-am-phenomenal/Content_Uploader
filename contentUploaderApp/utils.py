@@ -1,6 +1,8 @@
 import json 
+from background_task import background
 from django.http import HttpResponse
 from .models  import File
+from .image_converter import ImageConverter
 
 class Utils():
     def getParamsFromRequest(self, requestObject): 
@@ -78,3 +80,14 @@ class Utils():
             "fileObject": tempFile
         }
         return properties
+
+    def processFiles(self, queue):
+        utils = Utils()
+        imageConverter = ImageConverter()
+        while (len(queue.queue) >= 1): 
+            toBeProcessed = queue.popVal()
+            convertedToDict = utils.convertTemporaryFileToDict(toBeProcessed)
+            if convertedToDict["fileType"] == "Image":
+                savedImagePaths = imageConverter.convertToMultipleFormats(convertedToDict)
+            fileObject = utils.convertDictToFileObject(convertedToDict, savedImagePaths)
+            fileObject.save()

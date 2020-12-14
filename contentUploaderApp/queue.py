@@ -9,9 +9,8 @@ class Queue():
         self.queue.append(val)
 
     def popVal(self):
-        if len(self.queue) != 0:
+        if len(self.queue) > 0:
             poppedVal = self.queue.pop(0)
-            self.queue = self.queue[1: len(self.queue)]
             return poppedVal
 
     def saveDetailsInFile(self): 
