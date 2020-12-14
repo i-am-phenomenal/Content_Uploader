@@ -1,5 +1,6 @@
 import json 
 from django.http import HttpResponse
+from .models  import File
 
 class Utils():
     def getParamsFromRequest(self, requestObject): 
@@ -54,3 +55,14 @@ class Utils():
             "fileResolution": file.fileResolution,
             "convertedFilePaths": file.convertedFilePaths
         }
+
+    def convertDictToFileObject(self, params, savedImagePaths):
+        return File(
+            fileName = params["fileName"],
+            fileType= params["fileType"],
+            fileObject = params["fileObject"],
+            fileSize = params["fileSize"],
+            fileFormat = params["fileFormat"],
+            fileResolution = params["fileResolution"],
+            convertedFilePaths = ";;".join(savedImagePaths)
+        )

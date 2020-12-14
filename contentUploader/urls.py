@@ -21,6 +21,5 @@ from contentUploaderApp.file_convert_view import FileConvertView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("file/", FileView.as_view()),
-    # path("file/convert/", FileConvertView.as_view())
     path("file/delete_all", deleteAllFileRecords), # Added this URL for testing purposes
 ]

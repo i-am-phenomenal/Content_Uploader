@@ -9,12 +9,14 @@ from .decorators import Decorators
 import os
 from django.conf import settings
 from .image_converter import ImageConverter
+from .queue import Queue
 
 class FileView(View): 
     decorators = Decorators()
-    
+        
     @decorators.validateFileContentTypeForPOST
     @decorators.checkIfFilePresentInRequest
+    @decorators.validateIfImageOrVideoOnly  
     @decorators.checkIfFileDoesNotExist
     @decorators.checkIfFileSizeUnderLimit
     def post(self, request):
@@ -29,25 +31,29 @@ class FileView(View):
         """
         utils = Utils()
         imageConverter = ImageConverter()
+        queue = Queue()
+
         params = utils.getFileObjectFromRequest(request)
         savedImagePaths = []
-        if params["fileType"] == "Image":
-            savedImagePaths = imageConverter.convertToMultipleFormats(params)
-        fileObject = File(
-            fileName = params["fileName"],
-            fileType= params["fileType"],
-            fileObject = params["fileObject"],
-            fileSize = params["fileSize"],
-            fileFormat = params["fileFormat"],
-            fileResolution = params["fileResolution"],
-            convertedFilePaths = ";;".join(savedImagePaths)
-        )
-        fileObject.save()
-        return HttpResponse(
-            json.dumps(utils.convertFileObjectToDict(fileObject)),
-            content_type="application/json"
-        )
-    
+        allFilesDict = dict(request.FILES)
+        
+        if len(allFilesDict) > 1:
+            for key, value in allFilesDict.items():
+                queue.pushVal(value[0])
+            
+            queue.saveDetailsInFile()
+            toBeProcessed = queue.popVal()
+
+        else:
+            if params["fileType"] == "Image":
+                savedImagePaths = imageConverter.convertToMultipleFormats(params)
+            fileObject = utils.convertDictToFileObject(savedImagePaths)
+            fileObject.save()
+            return HttpResponse(
+                json.dumps(utils.convertFileObjectToDict(fileObject)),
+                content_type="application/json"
+            )
+        
     @decorators.validateFileContentTypeForDELETE
     @decorators.checkIfValidParams
     def delete(self, request): 

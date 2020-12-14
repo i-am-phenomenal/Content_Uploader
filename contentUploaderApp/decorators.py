@@ -83,3 +83,12 @@ class Decorators():
             else: 
                 return function(referenceToCurrentObject, request)
         return innerFunction
+
+    def validateIfImageOrVideoOnly(self, function): 
+        def innerFunction(referenceToCurrentObject, request):
+            utils= Utils()
+            fileParams = request.FILES.get("File")
+            contentType = fileParams.content_type.split("/")[0]
+            response = function(referenceToCurrentObject, request) if (contentType == "image" or contentType == "video") else utils.getBadResponse("Invalid File uploaded", 400)
+            return response
+        return innerFunction
